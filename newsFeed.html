@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <script src="key.js"></script>
+    <title>News Feed</title>
+</head>
+<body>
+    <input type="text" id="topic" placeholder="Enter Topic..." />
+    <button id="button">Search</button>
+    <div id="display"></div>
+
+    <script>
+        document.getElementById('button').addEventListener('click', function(){
+            let xhr = new XMLHttpRequest();
+            let topic = document.getElementById('topic').value;
+
+            xhr.open('GET', 'https://newsapi.org/v2/everything?q=' 
+                    + topic + '&sortBy=popularity&apiKey=' + key, true);
+
+            xhr.onload = function(){
+                if(this.status == 200){
+                    var parsedData = JSON.parse(xhr.responseText);
+
+                    var display = "<h3>News Related To: " + topic + "</h3>";
+
+                    for(let i=0; i< parsedData["articles"].length; i++){
+                        var content = parsedData["articles"][i].content;
+                        if(content.length > 255){
+                            content = content.substring(0, 255) + "...";
+                        }
+
+                        display+= "<hr /><p><strong>" + parsedData["articles"][i].title + "</strong></p>";
+                        display+= "<p>Source: <a href='" + parsedData["articles"][i].url + "'>"
+                                    + parsedData["articles"][i]["source"].name + "</a></p>";
+                        display += "<p>" + content + "</p>";
+                    }
+                    
+                    document.getElementById('display').innerHTML = display;
+                }else{
+                    console.log("You Fail!!!!");
+                }
+            };
+
+            xhr.send();
+        });
+    </script>
+</body>
+</html>
